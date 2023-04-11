@@ -1,4 +1,4 @@
-import {Fragment} from 'react'
+import {Fragment, useState} from 'react'
 import {Menu, Popover, Transition} from '@headlessui/react'
 import {
 	ArrowLongLeftIcon,
@@ -11,6 +11,7 @@ import {
 	UserIcon,
 } from '@heroicons/react/20/solid'
 import {Bars3Icon, BellIcon, XMarkIcon} from '@heroicons/react/24/outline'
+import FormReminderSidebar from "@/components/FormReminderSidebar";
 
 const user = {
 	name: 'Whitney Francis',
@@ -18,6 +19,15 @@ const user = {
 	imageUrl:
 			'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
 }
+
+const userToForm = [
+	{
+		name: 'Whitney Francis',
+		username: 'whiteny@example.com'
+	}
+]
+
+
 const navigation = [
 	{name: 'Dashboard', href: '#'},
 	{name: 'Jobs', href: '#'},
@@ -114,6 +124,7 @@ function classNames(...classes: string[]) {
 }
 
 export default function DetailUser() {
+	const [open, setOpen] = useState(false)
 	return (
 			<>
 				<div className="min-h-full">
@@ -155,11 +166,12 @@ export default function DetailUser() {
 										type="button"
 										className="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-800 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
 								>
-									Fijar cliente
+									Eliminar
 								</button>
 								<button
 										type="button"
-										className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+										onClick={() => {setOpen(true)}}
+										className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
 								>
 									Crear recordatorio
 								</button>
@@ -321,7 +333,7 @@ export default function DetailUser() {
 															</a>
 															<button
 																	type="submit"
-																	className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+																	className="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
 															>
 																Enviar
 															</button>
@@ -387,6 +399,7 @@ export default function DetailUser() {
 						</div>
 					</main>
 				</div>
+				<FormReminderSidebar open={open} setOpen={setOpen} person={userToForm}/>
 			</>
 	)
 }

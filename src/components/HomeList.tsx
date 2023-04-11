@@ -1,4 +1,5 @@
 import { CheckCircleIcon, ChevronRightIcon, EnvelopeIcon } from '@heroicons/react/20/solid'
+import Link from "next/link";
 
 const applications = [
 	{
@@ -11,7 +12,7 @@ const applications = [
 		date: '2020-01-07',
 		dateFull: 'January 7, 2020',
 		stage: 'Completed phone screening',
-		href: '#',
+		href: '1',
 	},
 	{
 		applicant: {
@@ -23,7 +24,7 @@ const applications = [
 		date: '2020-01-07',
 		dateFull: 'January 7, 2020',
 		stage: 'Completed phone screening',
-		href: '#',
+		href: '2',
 	},
 	{
 		applicant: {
@@ -35,7 +36,7 @@ const applications = [
 		date: '2020-01-07',
 		dateFull: 'January 7, 2020',
 		stage: 'Completed phone screening',
-		href: '#',
+		href: '3',
 	},
 ]
 
@@ -45,7 +46,7 @@ export default function HomeList() {
 				<ul role="list" className="divide-y divide-gray-200">
 					{applications.map((application) => (
 							<li key={application.applicant.email}>
-								<a href={application.href} className="block hover:bg-gray-50">
+								<Link href={'/clientes/' + application.href} className="block hover:bg-gray-50">
 									<div className="flex items-center px-4 py-4 sm:px-6">
 										<div className="flex min-w-0 flex-1 items-center">
 											<div className="flex-shrink-0">
@@ -76,7 +77,7 @@ export default function HomeList() {
 											<ChevronRightIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
 										</div>
 									</div>
-								</a>
+								</Link>
 							</li>
 					))}
 				</ul>
