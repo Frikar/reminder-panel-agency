@@ -120,8 +120,8 @@ export default function Layout({ children }: Props) {
 														/>
 													</div>
 													<div className="ml-3">
-														<p className="text-base font-medium text-white">Tom Cook</p>
-														<p className="text-sm font-medium text-gray-400 group-hover:text-gray-300">View profile</p>
+														<p className="text-base font-medium text-white">Diego Vásquez</p>
+														<p className="text-sm font-medium text-red-300 group-hover:text-red-400">Cerrar sesión</p>
 													</div>
 												</div>
 											</a>
