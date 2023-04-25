@@ -14,7 +14,7 @@ export default function TableUser({people}: ClientsProps) {
 						<div className="sm:flex-auto">
 							<h1 className="text-2xl font-semibold leading-6 text-gray-900">Clientes</h1>
 							<p className="mt-2 text-sm text-gray-700">
-								A list of all the users in your account including their name, title, email and role.
+								Listado de todos los clientes en el sistema
 							</p>
 						</div>
 						<div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
