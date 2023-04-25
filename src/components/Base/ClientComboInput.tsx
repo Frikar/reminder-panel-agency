@@ -1,45 +1,49 @@
-import {useState} from 'react'
+import {forwardRef, useEffect, useRef, useState} from 'react'
 import {CheckIcon, ChevronUpDownIcon} from '@heroicons/react/20/solid'
 import {Combobox} from '@headlessui/react'
-
-const people = [
-	{id: 1, name: 'Leslie Alexander', username: '@lesliealexander'},
-	// More users...
-]
+import {ClientResponse} from "../../models/ClientInterface";
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(' ')
 }
 
-type Person = {
-	id?: number
-	name: string
-	username: string
-}
-
 interface Props {
-	peopleValue?: Person[]
+	register: any;
+	setValue: any;
+	peopleValue: ClientResponse[]
+	actualClient?: ClientResponse
 }
 
-export default function ClientComboInput({peopleValue}: Props) {
+const ClientComboInput = (({peopleValue, register, actualClient, setValue}: Props) => {
 	const [query, setQuery] = useState('')
-	const [selectedPerson, setSelectedPerson] = useState(peopleValue ? peopleValue[0] : null)
-
+	const [selectedPerson, setSelectedPerson] = useState(actualClient ? actualClient : null)
 	const filteredPeople =
 			query === ''
-					? people
-					: people.filter((person) => {
-						return person.name.toLowerCase().includes(query.toLowerCase())
+					? peopleValue
+					: peopleValue.filter((person) => {
+						return person.nombre.toLowerCase().includes(query.toLowerCase())
 					})
 
+	useEffect(() => {
+				if (actualClient) {
+					setValue('clientId', actualClient.id);
+				}
+			}, [actualClient, setValue]
+	)
+	const handleValueChange = (value: ClientResponse) => {
+		console.log(value)
+		setSelectedPerson(value);
+		setValue('clientId', value.id);
+	};
 	return (
-			<Combobox as="div" value={selectedPerson} onChange={setSelectedPerson} disabled={peopleValue ? true : false}>
+			<Combobox as="div" {...register} value={selectedPerson} onChange={handleValueChange}
+			          disabled={actualClient ? true : false}>
 				<Combobox.Label className="block text-sm font-medium leading-6 text-gray-900">Asigna un cliente</Combobox.Label>
 				<div className="relative mt-2">
 					<Combobox.Input
 							className="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 							onChange={(event) => setQuery(event.target.value)}
-							displayValue={(person: Person) => person?.name}
+							displayValue={(person: ClientResponse) => person?.nombre}
 					/>
 					<Combobox.Button
 							className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
@@ -64,14 +68,14 @@ export default function ClientComboInput({peopleValue}: Props) {
 													<>
 														<div className="flex">
 															<span
-																	className={classNames('truncate', selected ? 'font-semibold' : '')}>{person.name}</span>
+																	className={classNames('truncate', selected ? 'font-semibold' : '')}>{person.nombre}</span>
 															<span
 																	className={classNames(
 																			'ml-2 truncate text-gray-500',
 																			active ? 'text-indigo-200' : 'text-gray-500'
 																	)}
 															>
-																{person.username}
+																{person.correoElectronico}
 															</span>
 														</div>
 
@@ -94,4 +98,5 @@ export default function ClientComboInput({peopleValue}: Props) {
 				</div>
 			</Combobox>
 	)
-}
+});
+export default ClientComboInput;

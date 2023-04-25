@@ -1,34 +1,37 @@
 import Link from "next/link";
 import {useRouter} from "next/router";
 import {useForm} from 'react-hook-form';
-import {CreateClientDto} from '../models/ClientInterface';
-import {createClient} from '../services/clientsService';
+import {ClientResponse, CreateClientDto, UpdateClientDto} from '../models/ClientInterface';
+import {createClient, updateClient} from '../services/clientsService';
+import {useSession} from "next-auth/react";
 
-export default function FormUser() {
+
+interface FormEditUserProps {
+	client: ClientResponse
+}
+
+export default function FormEditUser({client}: FormEditUserProps) {
 	const router = useRouter();
-	const {register, handleSubmit, reset, formState, control, setValue, getValues} = useForm<CreateClientDto>();
-	const onSubmit = async (data: CreateClientDto, goBack = false) => {
-		console.log('Valor:', data.metodoAdquisicion);
+	const {register, handleSubmit, reset, formState, control, setValue, getValues} = useForm<UpdateClientDto>();
+	const onSubmit = async (data: UpdateClientDto) => {
 		try {
-			const newClient = await createClient(data);
+			const updatedClient = await updateClient(client.id, data);
 			reset();
-			if (goBack) {
-				await router.push('/clientes');
-			}
-			console.log('Cliente creado', newClient);
+			await router.back();
+			console.log('Cliente editado', updatedClient);
 		} catch (error) {
-			console.error('Error creando cliente', error);
+			console.error('Error editando cliente', error);
 		}
-	}
+	};
 	return (
 			<>
-				<form className="space-y-8 divide-y divide-gray-200" onSubmit={handleSubmit((data) => onSubmit(data, false))}>
+				<form className="space-y-8 divide-y divide-gray-200" onSubmit={handleSubmit(onSubmit)}>
 					<div className="space-y-8 divide-y divide-gray-200 sm:space-y-5">
 						<div className="space-y-6 sm:space-y-5">
 							<div>
-								<h3 className="text-base font-semibold leading-6 text-gray-900">Nuevo cliente</h3>
+								<h3 className="text-base font-semibold leading-6 text-gray-900">Editar cliente</h3>
 								<p className="mt-1 max-w-2xl text-sm text-gray-500">
-									Toda la información creada sera almacenada para el uso desde los recordatorios
+									Esta información sera almacenada para el uso de los recordatorios
 								</p>
 							</div>
 
@@ -44,6 +47,7 @@ export default function FormUser() {
 												})}
 												type="text"
 												name="nombre"
+												defaultValue={client?.nombre}
 												id="nombre"
 												autoComplete="given-name"
 												className="block w-full max-w-lg rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -63,6 +67,7 @@ export default function FormUser() {
 												})}
 												type="text"
 												name="apellido"
+												defaultValue={client?.apellido}
 												id="apellido"
 												autoComplete="family-name"
 												className="block w-full max-w-lg rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -83,7 +88,7 @@ export default function FormUser() {
 		                name="descripcion"
 		                rows={3}
 		                className="block w-full max-w-lg rounded-md border-0 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:py-1.5 sm:text-sm sm:leading-6"
-		                defaultValue={''}
+		                defaultValue={client?.descripcion}
                 />
 										<p className="mt-2 text-sm text-gray-500">Escribe una breve descripción del cliente</p>
 									</div>
@@ -108,6 +113,7 @@ export default function FormUser() {
 																	id="instagram"
 																	name="metodoAdquisicion"
 																	type="radio"
+																	defaultChecked={client?.metodoAdquisicion === "Instagram"}
 																	value="Instagram"
 																	className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
 															/>
@@ -126,6 +132,7 @@ export default function FormUser() {
 																	id="referral"
 																	name="metodoAdquisicion"
 																	type="radio"
+																	defaultChecked={client?.metodoAdquisicion === "Referido"}
 																	value="Referido"
 																	className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
 															/>
@@ -144,6 +151,7 @@ export default function FormUser() {
 																	id="direct"
 																	name="metodoAdquisicion"
 																	type="radio"
+																	defaultChecked={client?.metodoAdquisicion === "Directo"}
 																	value="Directo"
 																	className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
 															/>
@@ -162,6 +170,7 @@ export default function FormUser() {
 																	id="website"
 																	name="metodoAdquisicion"
 																	type="radio"
+																	defaultChecked={client?.metodoAdquisicion === "Website"}
 																	value="Website"
 																	className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
 															/>
@@ -201,7 +210,8 @@ export default function FormUser() {
 												{...register("correoElectronico", {
 													required: true,
 												})}
-												id="correoElectronicol"
+												defaultValue={client?.correoElectronico}
+												id="correoElectronico"
 												name="correoElectronico"
 												type="email"
 												autoComplete="email"
@@ -221,6 +231,7 @@ export default function FormUser() {
 												{...register("pais", {
 													required: true,
 												})}
+												defaultValue={client?.pais}
 												id="pais"
 												name="pais"
 												autoComplete="country-name"
@@ -254,6 +265,7 @@ export default function FormUser() {
 												})}
 												type="text"
 												name="ciudad"
+												defaultValue={client?.ciudad}
 												id="city"
 												autoComplete="address-level2"
 												className="block w-full max-w-lg rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -274,6 +286,7 @@ export default function FormUser() {
 												})}
 												type="text"
 												name="empresa"
+												defaultValue={client?.empresa}
 												id="empresa"
 												autoComplete="company"
 												className="block w-full max-w-lg rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
@@ -293,6 +306,7 @@ export default function FormUser() {
 														}
 												)}
 												type="text"
+												defaultValue={client?.sitioWeb}
 												name="sitioWeb"
 												id="sitioWeb"
 												autoComplete="address-level1"
@@ -313,9 +327,10 @@ export default function FormUser() {
 													required: true,
 												})}
 												type="phone"
+												defaultValue={client?.telefono}
 												name="telefono"
 												id="telefono"
-												autoComplete="postal-code"
+												autoComplete="phone-number"
 												className="block w-full px-3 max-w-lg rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
 										/>
 										{formState.errors.telefono &&
@@ -350,6 +365,7 @@ export default function FormUser() {
 																		required: true,
 																	})}
 																	id="project"
+																	defaultChecked={client?.tipoServicio.includes("Proyecto único")}
 																	name="tipoServicio"
 																	type="checkbox"
 																	value="Proyecto único"
@@ -373,6 +389,7 @@ export default function FormUser() {
 																	})}
 																	id="service"
 																	name="tipoServicio"
+																	defaultChecked={client?.tipoServicio.includes("Servicio recurrente")}
 																	value="Servicio recurrente"
 																	type="checkbox"
 																	className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
@@ -382,7 +399,8 @@ export default function FormUser() {
 															<label htmlFor="service" className="text-sm font-medium leading-6 text-gray-900">
 																Servicio recurrente
 															</label>
-															<p className="text-sm text-gray-500">Servicio mensual como puede ser manejo de redes sociales, marketing, diseños constantes</p>
+															<p className="text-sm text-gray-500">Servicio mensual como puede ser manejo de redes
+																sociales, marketing, diseños constantes</p>
 														</div>
 													</div>
 													<div className="relative flex items-start">
@@ -393,6 +411,7 @@ export default function FormUser() {
 																	})}
 																	id="maintenance"
 																	name="tipoServicio"
+																	defaultChecked={client?.tipoServicio.includes("Mantenimiento mensual")}
 																	value="Mantenimiento mensual"
 																	type="checkbox"
 																	className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
@@ -424,7 +443,8 @@ export default function FormUser() {
 											</div>
 											<div className="sm:col-span-2">
 												<div className="max-w-lg">
-													<p className="text-sm text-gray-500">Estos son los valores con los que son asignados las actividades de seguimiento de cada cliente</p>
+													<p className="text-sm text-gray-500">Estos son los valores con los que son asignados las
+														actividades de seguimiento de cada cliente</p>
 													<div className="mt-4 space-y-4">
 														<div className="flex items-center">
 															<input
@@ -432,6 +452,7 @@ export default function FormUser() {
 																		required: true,
 																	})}
 																	id="high-value"
+																	defaultChecked={client?.tipoCliente === "Alto valor"}
 																	name="tipoCliente"
 																	type="radio"
 																	value="Alto valor"
@@ -449,6 +470,7 @@ export default function FormUser() {
 																	{...register("tipoCliente", {
 																		required: true,
 																	})}
+																	defaultChecked={client?.tipoCliente === "Nuevo cliente"}
 																	id="new-client"
 																	name="tipoCliente"
 																	type="radio"
@@ -468,6 +490,7 @@ export default function FormUser() {
 																		required: true,
 																	})}
 																	id="new-contact"
+																	defaultChecked={client?.tipoCliente === "Contacto nuevo"}
 																	name="tipoCliente"
 																	type="radio"
 																	value="Contacto nuevo"
@@ -486,6 +509,7 @@ export default function FormUser() {
 																		required: true,
 																	})}
 																	id="recurrent-client"
+																	defaultChecked={client?.tipoCliente === "Regular"}
 																	name="tipoCliente"
 																	type="radio"
 																	value="Regular"
@@ -513,7 +537,7 @@ export default function FormUser() {
 					<div className="pt-5">
 						<div className="flex justify-end gap-x-3">
 							<Link
-									href={'/clientes'}
+									href={`/clientes/${client?.id}`}
 									type="button"
 									className="rounded-md bg-white py-2 px-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
 							>
@@ -524,13 +548,6 @@ export default function FormUser() {
 									className="inline-flex justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
 							>
 								Guardar
-							</button>
-							<button
-									onClick={() => handleSubmit((data) => onSubmit(data, true))()}
-									type="button"
-									className="inline-flex justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-							>
-								Guardar y volver
 							</button>
 						</div>
 					</div>

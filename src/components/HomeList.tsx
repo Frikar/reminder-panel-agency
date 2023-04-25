@@ -1,5 +1,6 @@
 import { CheckCircleIcon, ChevronRightIcon, EnvelopeIcon } from '@heroicons/react/20/solid'
 import Link from "next/link";
+import {ReminderResponse} from "../models/ReminderInterface";
 
 const applications = [
 	{
@@ -40,34 +41,38 @@ const applications = [
 	},
 ]
 
-export default function HomeList() {
+interface HomeListProps {
+	remindersFeatured: ReminderResponse[]
+}
+
+export default function HomeList({remindersFeatured}: HomeListProps) {
 	return (
 			<div className="overflow-hidden bg-white shadow sm:rounded-md">
 				<ul role="list" className="divide-y divide-gray-200">
-					{applications.map((application) => (
-							<li key={application.applicant.email}>
-								<Link href={'/clientes/' + application.href} className="block hover:bg-gray-50">
+					{remindersFeatured.map((reminder) => (
+							<li key={reminder.id}>
+								<Link href={'/recordatorios/' + reminder.id} className="block hover:bg-gray-50">
 									<div className="flex items-center px-4 py-4 sm:px-6">
 										<div className="flex min-w-0 flex-1 items-center">
 											<div className="flex-shrink-0">
-												<img className="h-12 w-12 rounded-full" src={application.applicant.imageUrl} alt="" />
+												<img className="h-12 w-12 rounded-full" src={reminder.cliente?.avatar} alt="" />
 											</div>
 											<div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2 md:gap-4">
 												<div>
-													<p className="truncate text-sm font-medium text-indigo-600">{application.applicant.name}</p>
+													<p className="truncate text-sm font-medium text-indigo-600">{reminder.cliente?.nombre} {reminder.cliente?.apellido}</p>
 													<p className="mt-2 flex items-center text-sm text-gray-500">
 														<EnvelopeIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-														<span className="truncate">{application.applicant.email}</span>
+														<span className="truncate">{reminder.cliente?.correoElectronico}</span>
 													</p>
 												</div>
 												<div className="hidden md:block">
 													<div>
-														<p className="text-sm text-gray-900">
-															Applied on <time dateTime={application.date}>{application.dateFull}</time>
+														<p className="text-md font-semibold text-gray-900">
+															{reminder.nombreRecordatorio} - {reminder.tipoRecordatorio}
 														</p>
-														<p className="mt-2 flex items-center text-sm text-gray-500">
+														<p className="mt-2 flex items-center gap-x-1 text-sm text-gray-500">
 															<CheckCircleIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-green-400" aria-hidden="true" />
-															{application.stage}
+															Fecha limite el <time dateTime={reminder.fechaRecordatorio}>{reminder.fechaRecordatorio}</time>
 														</p>
 													</div>
 												</div>

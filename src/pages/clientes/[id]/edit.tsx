@@ -1,9 +1,6 @@
-import {useRouter} from 'next/router'
-import DetailUser from "@/components/DetailUser";
 import {ClientResponse} from "../../../models/ClientInterface";
 import {getClient} from "../../../services/clientsService";
 import FormEditUser from "@/components/FormEditUser";
-import {GetServerSidePropsContext} from "next";
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/pages/api/auth/[...nextauth]";
 import Head from "next/head";
@@ -12,20 +9,20 @@ interface ClientDetailProps {
 	client: ClientResponse
 }
 
-const ClientDetail = ({client}: ClientDetailProps) => {
+const EditClient = ({client}: ClientDetailProps) => {
 	return (
 			<>
 				<Head>
-					<title>Cliente - {client.nombre} {client.apellido}</title>
+					<title>Editar cliente - {client.nombre} {client.apellido}</title>
 				</Head>
 				<div className="flex flex-col gap-3">
-					<DetailUser client={client}/>
+					<FormEditUser client={client}/>
 				</div>
 			</>
 	)
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+export async function getServerSideProps(context: any) {
 	const {id} = context.query;
 	const session = await getServerSession(context.req, context.res, authOptions);
 	if (!session) {
@@ -37,7 +34,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 		}
 	}
 	try {
-		const client = await getClient(id as string);
+		const client = await getClient(id);
 		return {
 			props: {
 				client
@@ -53,4 +50,4 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 
-export default ClientDetail
+export default EditClient

@@ -2,38 +2,31 @@ import Link from "next/link";
 import {CalendarIcon, MapPinIcon, UsersIcon, CurrencyDollarIcon} from '@heroicons/react/20/solid'
 import {useState} from "react";
 import FormReminderSidebar from "@/components/FormReminderSidebar";
+import {ReminderResponse} from "../models/ReminderInterface";
 
-const positions = [
-	{
-		id: 1,
-		title: 'Back End Developer',
-		status: 'Iniciado',
-		clientEmail: 'diego@test.com',
-		budget: 90,
-		closeDate: '2020-01-07',
-		closeDateFull: 'January 7, 2020',
-	},
-	{
-		id: 2,
-		title: 'Front End Developer',
-		status: 'Iniciado',
-		clientEmail: 'diego@test.com',
-		budget: 90,
-		closeDate: '2020-01-07',
-		closeDateFull: 'January 7, 2020',
-	},
-	{
-		id: 3,
-		title: 'User Interface Designer',
-		status: 'Iniciado',
-		clientEmail: 'diego@test.com',
-		budget: 80,
-		closeDate: '2020-01-14',
-		closeDateFull: 'January 14, 2020',
-	},
-]
+interface RemindersProps {
+	reminders: ReminderResponse[];
+	onFormSubmit: (newData: ReminderResponse) => void;
+}
+function classNames(...classes: any) {
+	return classes.filter(Boolean).join(' ')
+}
 
-export default function ListReminders() {
+const statusStyles = {
+	success: 'bg-green-100 text-green-800',
+	processing: 'bg-yellow-100 text-yellow-800',
+	programmed: 'bg-indigo-100 text-indigo-800',
+	failed: 'bg-red-100 text-red-800',
+}
+const returnStatusText = (status: string) => {
+	if (status === 'Pausado') return statusStyles.failed
+	if (status === 'Completado') return statusStyles.success
+	if (status === 'Programado') return statusStyles.programmed
+	if (status === 'Iniciado') return statusStyles.processing
+	if (status === 'failed') return statusStyles.failed
+}
+
+export default function ListReminders({reminders, onFormSubmit}: RemindersProps) {
 	const [open, setOpen] = useState(false)
 	return (
 			<>
@@ -57,15 +50,15 @@ export default function ListReminders() {
 					</div>
 					<div className="overflow-hidden bg-white shadow sm:rounded-md mt-8">
 						<ul role="list" className="divide-y divide-gray-200">
-							{positions.map((position) => (
-									<li key={position.id}>
-										<Link href={`/recordatorios/${position.id}`} className="block hover:bg-gray-50">
+							{reminders.map((reminder) => (
+									<li key={reminder.id}>
+										<Link href={`/recordatorios/${reminder.id}`} className="block hover:bg-gray-50">
 											<div className="px-4 py-4 sm:px-6">
 												<div className="flex items-center justify-between">
-													<p className="truncate text-sm font-medium text-indigo-600">{position.title}</p>
+													<p className="truncate text-sm font-medium text-indigo-600">{reminder.nombreRecordatorio}</p>
 													<div className="ml-2 flex flex-shrink-0">
-														<p className="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
-															{position.status}
+														<p className={classNames(returnStatusText(reminder.status), "inline-flex rounded-full w-fit px-2.5 py-0.5 text-xs font-semibold leading-5")}>
+															{reminder.status}
 														</p>
 													</div>
 												</div>
@@ -74,17 +67,17 @@ export default function ListReminders() {
 														<p className="flex items-center text-md text-gray-500">
 															<CurrencyDollarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
 															                    aria-hidden="true"/>
-															{position.budget}$
+															{reminder.precioServicio}$
 														</p>
 														<p className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
 															<UsersIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
-															{position.clientEmail}
+															{reminder.cliente?.correoElectronico}
 														</p>
 													</div>
 													<div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
 														<CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
 														<p>
-															Closing on <time dateTime={position.closeDate}>{position.closeDateFull}</time>
+															Cierra el <time dateTime={reminder.fechaRecordatorio}>{reminder.fechaRecordatorio}</time>
 														</p>
 													</div>
 												</div>
@@ -95,7 +88,7 @@ export default function ListReminders() {
 						</ul>
 					</div>
 				</div>
-				<FormReminderSidebar open={open} setOpen={setOpen}/>
+				<FormReminderSidebar onFormSubmit={onFormSubmit} open={open} setOpen={setOpen}/>
 			</>
 	)
 }

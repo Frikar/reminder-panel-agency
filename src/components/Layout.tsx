@@ -1,5 +1,6 @@
-import { Fragment, useState } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
+import React, {Fragment, useState} from 'react'
+import {Dialog, Transition} from '@headlessui/react'
+import {signOut, useSession} from "next-auth/react";
 import {
 	Bars3Icon,
 	CalendarIcon,
@@ -13,9 +14,9 @@ import {
 import Link from 'next/link'
 
 const navigation = [
-	{ name: 'Inicio', href: '/', icon: HomeIcon, current: true },
-	{ name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
-	{ name: 'Recordatorios', href: '/recordatorios', icon: FolderIcon, current: false },
+	{name: 'Inicio', href: '/', icon: HomeIcon, current: true},
+	{name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false},
+	{name: 'Recordatorios', href: '/recordatorios', icon: FolderIcon, current: false},
 ]
 
 function classNames(...classes: string[]) {
@@ -26,10 +27,11 @@ type Props = {
 	children: React.ReactNode
 }
 
-export default function Layout({ children }: Props) {
+export default function Layout({children}: Props) {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
-	return (
-			<>
+	const {data: session} = useSession();
+	if (session) {
+		return (
 				<div>
 					<Transition.Root show={sidebarOpen} as={Fragment}>
 						<Dialog as="div" className="relative z-40 lg:hidden" onClose={setSidebarOpen}>
@@ -42,7 +44,7 @@ export default function Layout({ children }: Props) {
 									leaveFrom="opacity-100"
 									leaveTo="opacity-0"
 							>
-								<div className="fixed inset-0 bg-gray-600 bg-opacity-75" />
+								<div className="fixed inset-0 bg-gray-600 bg-opacity-75"/>
 							</Transition.Child>
 
 							<div className="fixed inset-0 z-40 flex">
@@ -72,7 +74,7 @@ export default function Layout({ children }: Props) {
 														onClick={() => setSidebarOpen(false)}
 												>
 													<span className="sr-only">Close sidebar</span>
-													<XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+													<XMarkIcon className="h-6 w-6 text-white" aria-hidden="true"/>
 												</button>
 											</div>
 										</Transition.Child>
@@ -110,21 +112,21 @@ export default function Layout({ children }: Props) {
 											</nav>
 										</div>
 										<div className="flex flex-shrink-0 bg-gray-700 p-4">
-											<a href="#" className="group block flex-shrink-0">
+											<div className="group block flex-shrink-0">
 												<div className="flex items-center">
 													<div>
 														<img
 																className="inline-block h-10 w-10 rounded-full"
-																src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+																src={session.user?.image as string}
 																alt=""
 														/>
 													</div>
 													<div className="ml-3">
-														<p className="text-base font-medium text-white">Diego Vásquez</p>
+														<p className="text-base font-medium text-white">{session.user?.name}</p>
 														<p className="text-sm font-medium text-red-300 group-hover:text-red-400">Cerrar sesión</p>
 													</div>
 												</div>
-											</a>
+											</div>
 										</div>
 									</Dialog.Panel>
 								</Transition.Child>
@@ -168,21 +170,22 @@ export default function Layout({ children }: Props) {
 								</nav>
 							</div>
 							<div className="flex flex-shrink-0 bg-gray-700 p-4">
-								<a href="#" className="group block w-full flex-shrink-0">
+								<div className="group block w-full flex-shrink-0">
 									<div className="flex items-center">
 										<div>
 											<img
 													className="inline-block h-9 w-9 rounded-full"
-													src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+													src={session.user?.image || ''}
 													alt=""
 											/>
 										</div>
 										<div className="ml-3">
-											<p className="text-sm font-medium text-white">Diego Vasquez</p>
-											<p className="text-xs font-medium text-red-300 group-hover:text-red-400">Cerrar sesión</p>
+											<p className="text-sm font-medium text-white">{session.user?.name}</p>
+											<p onClick={() => signOut({callbackUrl: '/'})}
+											   className="text-xs font-medium text-red-300 group-hover:text-red-400">Cerrar sesión</p>
 										</div>
 									</div>
-								</a>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -194,7 +197,7 @@ export default function Layout({ children }: Props) {
 									onClick={() => setSidebarOpen(true)}
 							>
 								<span className="sr-only">Open sidebar</span>
-								<Bars3Icon className="h-6 w-6" aria-hidden="true" />
+								<Bars3Icon className="h-6 w-6" aria-hidden="true"/>
 							</button>
 						</div>
 						<main className="flex-1">
@@ -204,6 +207,11 @@ export default function Layout({ children }: Props) {
 						</main>
 					</div>
 				</div>
+		)
+	}
+	return (
+			<>
+				No autorizado
 			</>
 	)
 }
