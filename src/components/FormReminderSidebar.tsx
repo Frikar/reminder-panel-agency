@@ -235,7 +235,7 @@ export default function FormReminderSidebar({open, setOpen, onFormSubmit, remind
 																	locale="es"
 																	id={'fechaRecordatorio'}
 																	name={'fechaRecordatorio'}
-																	minDate={new Date(new Date().setDate(new Date().getDate() + 1))}
+																	minDate={new Date(new Date().setDate(new Date().getDate() + 5))}
 																	dateFormat="dd/MM/yyyy"
 																	className="block w-full rounded-md border-0 py-1.5 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 																	selected={startDate} onChange={(date: Date) => handleDateChange(date)}/>
